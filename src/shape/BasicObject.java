@@ -30,5 +30,22 @@ public abstract class BasicObject extends Shape {
         }
     }
 
+    public Port getClosestPort(int mx, int my) {
+        updatePorts();
+
+        Port closest = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Port p : ports) {
+            double dist = Math.pow(p.getX() - mx, 2) + Math.pow(p.getY() - my, 2);
+            if (dist < minDistance) {
+                minDistance = dist;
+                closest = p;
+            }
+        }
+
+        return closest;
+    }
+
     protected abstract void drawShape(Graphics g);
 }
