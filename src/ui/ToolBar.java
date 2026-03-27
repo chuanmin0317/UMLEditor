@@ -1,6 +1,6 @@
 package ui;
 
-import mode.CreateObjectMode;
+import mode.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,10 +13,11 @@ public class ToolBar extends JPanel {
             "Select", "Association", "Generalization", "Composition", "Rect", "Oval"
     };
 
-    private Canvas canvas;
+    private ToolbarListener listener;
+    private JButton currentButton, previousButton;
 
-    public ToolBar(Canvas canvas) {
-        this.canvas = canvas;
+    public ToolBar(ToolbarListener listener) {
+        this.listener = listener;
 
         setLayout(new GridLayout(6, 1, 0, 0));
         setBackground(Color.DARK_GRAY);
@@ -32,6 +33,12 @@ public class ToolBar extends JPanel {
             buttons[i] = btn;
             add(btn);
         }
+
+        currentButton = buttons[0];
+        previousButton = buttons[0];
+        updateButtonUI(currentButton);
+
+        listener.onModeSelected(new SelectMode());
     }
 
     private class ButtonClickListener implements ActionListener {
@@ -39,21 +46,57 @@ public class ToolBar extends JPanel {
         public void actionPerformed(ActionEvent e) {
             JButton clickedButton = (JButton) e.getSource();
 
-            for (JButton btn : buttons) {
-                btn.setBackground(Color.WHITE);
-                btn.setForeground(Color.BLACK);
+            if (currentButton != clickedButton) {
+                previousButton = currentButton;
+                currentButton = clickedButton;
             }
 
-            clickedButton.setBackground(Color.BLACK);
-            clickedButton.setForeground(Color.WHITE);
+            updateButtonUI(currentButton);
 
-            String modeName = clickedButton.getText();
-            if (modeName.equals("Rect") || modeName.equals("Oval")) {
-                canvas.setCurrentMode(new CreateObjectMode(modeName, canvas));
-            } else {
-                canvas.setCurrentMode(null);
+            String modeName = currentButton.getText();
+            switch (modeName) {
+                case "Rect" -> listener.onModeSelected(new RectMode());
+                case "Oval" -> listener.onModeSelected(new OvalMode());
+                case "Select" -> listener.onModeSelected(new SelectMode());
+                case "Association" -> listener.onModeSelected(new AssociationMode());
+                case "Composition" -> listener.onModeSelected(new CompositionMode());
+                case "Generalization" -> listener.onModeSelected(new GeneralizationMode());
             }
+        }
+    }
 
+    private void updateButtonUI(JButton activeBtn) {
+        for (JButton btn : buttons) {
+            btn.setBackground(Color.WHITE);
+            btn.setForeground(Color.BLACK);
+        }
+        if (activeBtn != null) {
+            activeBtn.setBackground(Color.BLACK);
+            activeBtn.setForeground(Color.WHITE);
+        }
+    }
+
+    public void resetButtonColor() {
+        if (previousButton != null) {
+            currentButton = previousButton;
+        }
+
+        updateButtonUI(currentButton);
+
+        if (listener != null && previousButton != null) {
+            String modeName = previousButton.getText();
+
+            Mode previousMode = switch (modeName) {
+                case "Select" -> new SelectMode();
+                case "Rect" -> new RectMode();
+                case "Oval" -> new OvalMode();
+                case "Association" -> new AssociationMode();
+                case "Composition" -> new CompositionMode();
+                case "Generalization" -> new GeneralizationMode();
+                default -> null;
+            };
+
+            listener.onModeSelected(previousMode);
         }
     }
 }

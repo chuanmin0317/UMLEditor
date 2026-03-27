@@ -24,6 +24,8 @@ public class UMLEditor extends JFrame {
         toolBar = new ToolBar(canvas);
         toolBar.setPreferredSize(new Dimension(120, 600));
         add(toolBar, BorderLayout.WEST);
+
+        canvas.setToolBar(toolBar);
     }
 
     private void createMenuBar() {

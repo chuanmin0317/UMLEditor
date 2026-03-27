@@ -16,7 +16,7 @@ public abstract class BasicObject extends Shape {
         }
     }
 
-    protected abstract  void updatePorts();
+    protected abstract void updatePorts();
 
     @Override
     public void draw(Graphics g) {
