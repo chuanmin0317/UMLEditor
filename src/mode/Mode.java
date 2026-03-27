@@ -1,9 +1,11 @@
 package mode;
 
+import ui.Canvas;
+
 import java.awt.event.MouseEvent;
 
 public interface Mode {
-    void mousePressed(MouseEvent e);
-    void mouseDragged(MouseEvent e);
-    void mouseReleased(MouseEvent e);
+    void mousePressed(int x, int y, Canvas canvas);
+    void mouseDragged(int x, int y, Canvas canvas);
+    void mouseReleased(int x, int y, Canvas canvas);
 }
