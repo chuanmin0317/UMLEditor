@@ -1,8 +1,6 @@
 package shape;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Polygon;
+import java.awt.*;
 
 public class CompositionLine extends Line {
     public CompositionLine(Port startPort, Port endPort) {
@@ -11,7 +9,11 @@ public class CompositionLine extends Line {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(Color.BLACK);
+        Graphics2D g2d = (Graphics2D) g;
+
+        g2d.setStroke(new java.awt.BasicStroke((2.0f)));
+        g2d.setColor(Color.GRAY);
+
         int x1 = startPort.getX();
         int y1 = startPort.getY();
         int x2 = endPort.getX();
@@ -31,7 +33,7 @@ public class CompositionLine extends Line {
         int x5 = (int) (x2 - diamondLength * Math.cos(angle) + diamondWidth * Math.sin(angle));
         int y5 = (int) (y2 - diamondLength * Math.sin(angle) - diamondWidth * Math.cos(angle));
 
-        g.drawLine(x1, y1, x4, y4);
+        g2d.drawLine(x1, y1, x4, y4);
 
         Polygon diamond = new Polygon();
         diamond.addPoint(x2, y2);
@@ -39,6 +41,9 @@ public class CompositionLine extends Line {
         diamond.addPoint(x4, y4);
         diamond.addPoint(x5, y5);
 
-        g.fillPolygon(diamond);
+        g2d.setColor(Color.BLACK);
+        g2d.fillPolygon(diamond);
+
+        g2d.setStroke(new java.awt.BasicStroke((1.0f)));
     }
 }

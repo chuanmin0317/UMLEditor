@@ -92,15 +92,28 @@ public class Canvas extends JPanel implements ToolbarListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        Graphics2D g2d = (Graphics2D) g;
+
         for (Shape shape : shapes) {
-            shape.draw(g);
+            shape.draw(g2d);
         }
 
         if (selectionBox != null) {
-            g.setColor(new Color(100, 149, 237, 50));
-            g.fillRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
-            g.setColor((new Color(100, 149, 237)));
-            g.drawRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
+            g2d.setColor((new Color(20, 40, 80)));
+
+            float[] dashPattern = {5f, 5f};
+            g2d.setStroke(new java.awt.BasicStroke(
+                    1.5f,
+                    java.awt.BasicStroke.CAP_BUTT,
+                    java.awt.BasicStroke.JOIN_MITER,
+                    10.0f,
+                    dashPattern,
+                    0.0f
+            ));
+
+            g2d.drawRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
+            g2d.setStroke(new java.awt.BasicStroke());
         }
     }
 }
