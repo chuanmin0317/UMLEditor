@@ -1,21 +1,27 @@
 package mode;
 
 import shape.BasicObject;
+import shape.Port;
 import shape.Shape;
 import ui.Canvas;
 
 import java.awt.*;
+import java.awt.image.renderable.RenderableImage;
 import java.util.List;
 
 public class SelectMode implements Mode {
     private boolean isSelectingArea = false;
     private boolean isMoving = false;
     private boolean isResizing = false;
+    private boolean resizeX = false;
+    private boolean resizeY = false;
 
     private Shape resizingShape = null;
 
     private int startX, startY;
     private int lastX, lastY;
+    private int fixedX = 0;
+    private int fixedY = 0;
 
     @Override
     public void mousePressed(int x, int y, Canvas canvas) {
@@ -33,9 +39,34 @@ public class SelectMode implements Mode {
         for (int i = shapes.size() - 1; i >=0; i--) {
             Shape s = shapes.get(i);
             if (s.isSelected() && s instanceof BasicObject) {
-                if (((BasicObject) s).isOnPort(x, y)) {
+                Port port = ((BasicObject) s).isOnPort(x, y);
+                if (port != null) {
                     isResizing = true;
                     resizingShape = s;
+
+                    // 找出固定不動的對角點
+                    int sx = s.getX(), sy = s.getY();
+                    int sw = s.getWidth(), sh = s.getHeight();
+                    int cx = sx + sw / 2, cy = sy + sh / 2;
+
+                    // 判斷X軸
+                    if (port.getX() < cx - 5) {
+                        resizeX = true; fixedX = sx + sw;
+                    } else if (port.getX() > cx + 5) {
+                        resizeX = true; fixedX = sx;
+                    } else {
+                        resizeX = false;
+                    }
+
+                    // 判斷Y軸
+                    if (port.getY() < cy - 5) {
+                        resizeY = true; fixedY = sy + sh;
+                    } else if (port.getY() > cy + 5) {
+                        resizeY = true; fixedY = sy;
+                    } else {
+                        resizeY = false;
+                    }
+
                     return;
                 }
             }
@@ -74,16 +105,30 @@ public class SelectMode implements Mode {
     @Override
     public void mouseDragged(int x, int y, Canvas canvas) {
         if (isResizing && resizingShape != null) {
-            int dx = x - lastX;
-            int dy = y - lastY;
+            int newX = resizingShape.getX();
+            int newY = resizingShape.getY();
+            int newWidth = resizingShape.getWidth();
+            int newHeight = resizingShape.getHeight();
 
-            int newWidth = Math.max(20, resizingShape.getWidth() + dx);
-            int newHeight = Math.max(20, resizingShape.getHeight() + dy);
+            if(resizeX) {
+                newWidth = Math.abs(x - fixedX);
+                newX = Math.min(x, fixedX);
+                if (newWidth < 40) {
+                    newWidth = 40;
+                    newX = (x < fixedX) ? fixedX - 40 : fixedX;
+                }
+            }
 
+            if (resizeY) {
+                newHeight = Math.abs(y - fixedY);
+                newY = Math.min(y, fixedY);
+                if (newHeight < 40) {
+                    newHeight = 40;
+                    newY = (y < fixedY) ? fixedY - 40 : fixedY;
+                }
+            }
+            resizingShape.setLocation(newX, newY);
             resizingShape.setSize(newWidth, newHeight);
-
-            lastX = x;
-            lastY = y;
             canvas.repaint();
 
         } else if (isMoving) {

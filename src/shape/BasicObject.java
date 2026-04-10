@@ -64,8 +64,8 @@ public abstract class BasicObject extends Shape {
         return closest;
     }
 
-    public boolean isOnPort(int mx, int my) {
-        if (!isSelected || ports == null) return false;
+    public Port isOnPort(int mx, int my) {
+        if (!isSelected || ports == null) return null;
 
         int size = 14;
         int half = size / 2;
@@ -73,10 +73,10 @@ public abstract class BasicObject extends Shape {
         for (Port p : ports) {
             if (mx >= p.getX() - half && mx <= p.getX() + half &&
                     my >= p.getY() - half && my <= p.getY() + half) {
-                return true;
+                return p;
             }
         }
-        return false;
+        return null;
     }
 
     protected abstract void drawShape(Graphics g);
