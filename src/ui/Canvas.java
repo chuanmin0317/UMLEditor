@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 
 import mode.Mode;
 import shape.Shape;
+import shape.Group;
 
 public class Canvas extends JPanel implements ToolbarListener {
     private List<Shape> shapes = new ArrayList<>();
@@ -87,6 +88,50 @@ public class Canvas extends JPanel implements ToolbarListener {
 
     public List<Shape> getShapes() {
         return shapes;
+    }
+
+    // Group
+    public void groupSelectedShapes() {
+        Group newGroup = new Group();
+        List<Shape> selectedShapes = new ArrayList<>();
+
+        for (Shape s : shapes) {
+            if (s.isSelected()) {
+                selectedShapes.add(s);
+            }
+        }
+
+        if (selectedShapes.size() > 1) {
+            for (Shape s : selectedShapes) {
+                s.setSelected(false);
+                newGroup.addShape(s);
+                shapes.remove(s);
+            }
+            newGroup.setSelected(true);
+            shapes.add(newGroup);
+            repaint();
+        }
+    }
+
+    public void ungroupSelectedShape() {
+        List<Shape> groupsToUngroup = new ArrayList<>();
+
+        for (Shape s : shapes) {
+            if (s.isSelected() && s instanceof Group) {
+                groupsToUngroup.add(s);
+            }
+        }
+
+        if (groupsToUngroup.size() != 1) return;
+
+        for (Shape g : groupsToUngroup) {
+            Group group = (Group) g;
+            shapes.remove(group);
+
+            shapes.addAll(group.getChildShapes());
+        }
+
+        repaint();
     }
 
     @Override
