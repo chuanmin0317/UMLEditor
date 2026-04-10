@@ -58,9 +58,9 @@ public class ToolBar extends JPanel {
                 case "Rect" -> listener.onModeSelected(new RectMode());
                 case "Oval" -> listener.onModeSelected(new OvalMode());
                 case "Select" -> listener.onModeSelected(new SelectMode());
-                case "Association" -> listener.onModeSelected(new AssociationMode());
-                case "Composition" -> listener.onModeSelected(new CompositionMode());
-                case "Generalization" -> listener.onModeSelected(new GeneralizationMode());
+                case "Association" -> listener.onModeSelected(new ConnectionMode("Association"));
+                case "Composition" -> listener.onModeSelected(new ConnectionMode("Composition"));
+                case "Generalization" -> listener.onModeSelected(new ConnectionMode("Generalization"));
             }
         }
     }
@@ -90,9 +90,9 @@ public class ToolBar extends JPanel {
                 case "Select" -> new SelectMode();
                 case "Rect" -> new RectMode();
                 case "Oval" -> new OvalMode();
-                case "Association" -> new AssociationMode();
-                case "Composition" -> new CompositionMode();
-                case "Generalization" -> new GeneralizationMode();
+                case "Association" -> new ConnectionMode("Association");
+                case "Composition" -> new ConnectionMode("Composition");
+                case "Generalization" -> new ConnectionMode("Generalization");
                 default -> null;
             };
 
