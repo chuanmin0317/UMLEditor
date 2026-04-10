@@ -5,7 +5,7 @@ import java.awt.Graphics;
 
 public class Port {
     private int x, y;
-    private static final int SIZE = 8;
+    private static final int SIZE = 14;
 
     public void setLocation(int x, int y) {
         this.x = x;
