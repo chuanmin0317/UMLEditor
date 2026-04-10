@@ -38,6 +38,9 @@ public class UMLEditor extends JFrame {
         JMenuItem ungroupIdem = new JMenuItem("Ungroup");
         JMenuItem labelItem = new JMenuItem("Label");
 
+        groupItem.addActionListener(e -> canvas.groupSelectedShapes());
+        ungroupIdem.addActionListener(e -> canvas.ungroupSelectedShape());
+
         edit.add(groupItem);
         edit.add(ungroupIdem);
         edit.add(labelItem);
