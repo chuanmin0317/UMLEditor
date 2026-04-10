@@ -8,8 +8,8 @@ import java.awt.*;
 
 public class UMLEditor extends JFrame {
 
-    private Canvas canvas;
-    private ToolBar toolBar;
+    private final Canvas canvas;
+
     // constructor
     public UMLEditor() {
         setSize(800, 600);
@@ -21,7 +21,7 @@ public class UMLEditor extends JFrame {
         canvas = new Canvas();
         add(canvas, BorderLayout.CENTER);
 
-        toolBar = new ToolBar(canvas);
+        ToolBar toolBar = new ToolBar(canvas);
         toolBar.setPreferredSize(new Dimension(120, 600));
         add(toolBar, BorderLayout.WEST);
 
