@@ -31,6 +31,11 @@ public abstract class Shape {
         this.y = y;
     }
 
+    public void setSize(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
     public void setSelected(boolean selected) {
         this.isSelected = selected;
     }

@@ -1,5 +1,6 @@
 package mode;
 
+import shape.BasicObject;
 import shape.Shape;
 import ui.Canvas;
 
@@ -9,6 +10,9 @@ import java.util.List;
 public class SelectMode implements Mode {
     private boolean isSelectingArea = false;
     private boolean isMoving = false;
+    private boolean isResizing = false;
+
+    private Shape resizingShape = null;
 
     private int startX, startY;
     private int lastX, lastY;
@@ -20,8 +24,23 @@ public class SelectMode implements Mode {
 
         isSelectingArea = false;
         isMoving = false;
+        isResizing = false;
 
         List<Shape> shapes = canvas.getShapes();
+
+        resizingShape = null;
+
+        for (int i = shapes.size() - 1; i >=0; i--) {
+            Shape s = shapes.get(i);
+            if (s.isSelected() && s instanceof BasicObject) {
+                if (((BasicObject) s).isOnPort(x, y)) {
+                    isResizing = true;
+                    resizingShape = s;
+                    return;
+                }
+            }
+        }
+
         Shape clickShape = null;
 
         for (int i = shapes.size() - 1; i >= 0; i--) {
@@ -33,7 +52,6 @@ public class SelectMode implements Mode {
 
         if (clickShape != null) {
             isMoving = true;
-
             // 如果本來沒被選取則取消所有選取，並選取所選的Shape，反之則不做動作
             if (!clickShape.isSelected()) {
                 for (Shape s : shapes) {
@@ -50,13 +68,25 @@ public class SelectMode implements Mode {
 
             isSelectingArea = true;
         }
-
         canvas.repaint();
     }
 
     @Override
     public void mouseDragged(int x, int y, Canvas canvas) {
-        if (isMoving) {
+        if (isResizing && resizingShape != null) {
+            int dx = x - lastX;
+            int dy = y - lastY;
+
+            int newWidth = Math.max(20, resizingShape.getWidth() + dx);
+            int newHeight = Math.max(20, resizingShape.getHeight() + dy);
+
+            resizingShape.setSize(newWidth, newHeight);
+
+            lastX = x;
+            lastY = y;
+            canvas.repaint();
+
+        } else if (isMoving) {
             int dx = x - lastX;
             int dy = y - lastY;
 
@@ -96,10 +126,12 @@ public class SelectMode implements Mode {
             }
 
             canvas.removeSelectionBox();
-            isSelectingArea = false;
             canvas.repaint();
         }
 
+        isSelectingArea = false;
         isMoving = false;
+        isResizing = false;
+        resizingShape = null;
     }
 }
