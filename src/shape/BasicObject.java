@@ -39,6 +39,14 @@ public abstract class BasicObject extends Shape {
         }
     }
 
+    @Override
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
+        if (ports != null) {
+            updatePorts();
+        }
+    }
+
     public Port getClosestPort(int mx, int my) {
         updatePorts();
 
@@ -54,6 +62,21 @@ public abstract class BasicObject extends Shape {
         }
 
         return closest;
+    }
+
+    public Port isOnPort(int mx, int my) {
+        if (!isSelected || ports == null) return null;
+
+        int size = 14;
+        int half = size / 2;
+
+        for (Port p : ports) {
+            if (mx >= p.getX() - half && mx <= p.getX() + half &&
+                    my >= p.getY() - half && my <= p.getY() + half) {
+                return p;
+            }
+        }
+        return null;
     }
 
     protected abstract void drawShape(Graphics g);
