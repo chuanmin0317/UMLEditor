@@ -8,10 +8,19 @@ import java.util.List;
 
 public class SelectMode implements Mode {
     private boolean isSelectingArea = false;
+    private boolean isMoving = false;
+
     private int startX, startY;
+    private int lastX, lastY;
 
     @Override
     public void mousePressed(int x, int y, Canvas canvas) {
+        startX = x; startY = y;
+        lastX = x; lastY = y;
+
+        isSelectingArea = false;
+        isMoving = false;
+
         List<Shape> shapes = canvas.getShapes();
         Shape clickShape = null;
 
@@ -23,11 +32,16 @@ public class SelectMode implements Mode {
         }
 
         if (clickShape != null) {
-            for (Shape s : shapes) {
-                s.setSelected(false);
+            isMoving = true;
+
+            // 如果本來沒被選取則取消所有選取，並選取所選的Shape，反之則不做動作
+            if (!clickShape.isSelected()) {
+                for (Shape s : shapes) {
+                    s.setSelected(false);
+                }
+                clickShape.setSelected(true);
             }
 
-            clickShape.setSelected(true);
             isSelectingArea = false;
         } else {
             for (Shape s : shapes) {
@@ -35,8 +49,6 @@ public class SelectMode implements Mode {
             }
 
             isSelectingArea = true;
-            startX = x;
-            startY = y;
         }
 
         canvas.repaint();
@@ -44,7 +56,21 @@ public class SelectMode implements Mode {
 
     @Override
     public void mouseDragged(int x, int y, Canvas canvas) {
-        if (isSelectingArea) {
+        if (isMoving) {
+            int dx = x - lastX;
+            int dy = y - lastY;
+
+            for (Shape s : canvas.getShapes()) {
+                if (s.isSelected()) {
+                    s.setLocation(s.getX() + dx, s.getY() + dy);
+                }
+            }
+
+            lastX = x;
+            lastY = y;
+            canvas.repaint();
+
+        } else if (isSelectingArea) {
             canvas.setSelectionBox(startX, startY, x, y);
             canvas.repaint();
         }
@@ -60,6 +86,7 @@ public class SelectMode implements Mode {
 
             Rectangle selectionRect = new Rectangle(minX, minY, width, height);
 
+            // 檢查那些Shape完全落於此處
             for (Shape s : canvas.getShapes()) {
                 Rectangle shapeRect = new Rectangle(s.getX(), s.getY(), s.getWidth(), s.getHeight());
 
@@ -72,5 +99,7 @@ public class SelectMode implements Mode {
             isSelectingArea = false;
             canvas.repaint();
         }
+
+        isMoving = false;
     }
 }
