@@ -30,6 +30,15 @@ public abstract class BasicObject extends Shape {
         }
     }
 
+    @Override
+    public void setLocation(int x, int y) {
+        super.setLocation(x, y);
+
+        if (ports != null) {
+            updatePorts();
+        }
+    }
+
     public Port getClosestPort(int mx, int my) {
         updatePorts();
 
