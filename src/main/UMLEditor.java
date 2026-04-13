@@ -41,6 +41,8 @@ public class UMLEditor extends JFrame {
         groupItem.addActionListener(e -> canvas.groupSelectedShapes());
         ungroupIdem.addActionListener(e -> canvas.ungroupSelectedShape());
 
+        labelItem.addActionListener(e -> canvas.customizeLabelStyle());
+
         edit.add(groupItem);
         edit.add(ungroupIdem);
         edit.add(labelItem);

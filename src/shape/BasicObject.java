@@ -1,9 +1,11 @@
 package shape;
 
-import java.awt.Graphics;
+import java.awt.*;
 
 public abstract class BasicObject extends Shape {
     protected  Port[] ports;
+    protected String name = "";
+    protected Color bgColor = Color.LIGHT_GRAY;
 
     public BasicObject(int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -44,6 +46,38 @@ public abstract class BasicObject extends Shape {
         super.setSize(width, height);
         if (ports != null) {
             updatePorts();
+        }
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setBgColor(Color bgColor) {
+        this.bgColor = bgColor;
+    }
+
+    public Color getBgColor() {
+        return bgColor;
+    }
+
+    public void drawName(java.awt.Graphics g) {
+        if (name != null && !name.isEmpty()) {
+            // 取得字體的量測工具
+            java.awt.FontMetrics fm = g.getFontMetrics();
+            int stringWidth = fm.stringWidth(name);
+            int stringAscent = fm.getAscent();
+
+            int testX = x + (width - stringWidth) / 2;
+            int textY = y + (height + stringAscent) / 2 - 2;
+
+            g.setColor(Color.BLACK);
+            g.drawString(name, testX, textY);
+
         }
     }
 

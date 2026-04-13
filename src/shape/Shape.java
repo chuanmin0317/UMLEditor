@@ -1,12 +1,11 @@
 package shape;
 
-import java.awt.Graphics;
+import java.awt.*;
 
 public abstract class Shape {
     protected int x, y, width, height;
     protected int depth;
     protected boolean isSelected = false;
-    protected String name = "";
 
     public Shape(int x, int y, int width, int height) {
         this.x = x;

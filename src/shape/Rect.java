@@ -24,9 +24,11 @@ public class Rect extends BasicObject {
 
     @Override
     protected void drawShape(Graphics g) {
-        g.setColor(Color.LIGHT_GRAY);
+        g.setColor(bgColor);
         g.fillRect(x, y, width, height);
         g.setColor(Color.BLACK);
         g.drawRect(x, y, width, height);
+
+        drawName(g);
     }
 }

@@ -20,9 +20,11 @@ public class Oval extends BasicObject {
 
     @Override
     public void drawShape(Graphics g) {
-        g.setColor(Color.LIGHT_GRAY);
+        g.setColor(bgColor);
         g.fillOval(x, y, width, height);
         g.setColor(Color.BLACK);
         g.drawOval(x, y, width, height);
+
+        drawName(g);
     }
 }
