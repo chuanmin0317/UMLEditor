@@ -41,8 +41,11 @@ public class CompositionLine extends Line {
         diamond.addPoint(x4, y4);
         diamond.addPoint(x5, y5);
 
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(Color.WHITE);
         g2d.fillPolygon(diamond);
+
+        g2d.setColor(Color.GRAY);
+        g.drawPolygon(diamond);
 
         g2d.setStroke(new java.awt.BasicStroke((1.0f)));
     }

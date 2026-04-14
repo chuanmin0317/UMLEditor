@@ -83,6 +83,8 @@ public class SelectMode implements Mode {
 
         if (clickShape != null) {
             isMoving = true;
+
+            canvas.bringToFront(clickShape);
             // 如果本來沒被選取則取消所有選取，並選取所選的Shape，反之則不做動作
             if (!clickShape.isSelected()) {
                 for (Shape s : shapes) {

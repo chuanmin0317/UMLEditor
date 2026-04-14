@@ -58,9 +58,32 @@ public class Canvas extends JPanel implements ToolbarListener {
         this.toolBar = toolBar;
     }
 
+    // Depth maintain
+    public void updateDepths() {
+        int n = shapes.size();
+        for (int i = 0; i < n; i++) {
+            shapes.get(i).setDepth(n - 1 - i);
+        }
+    }
+
+    public void bringToFront(Shape shape) {
+        if (shapes.remove(shape)) {
+            shapes.add(shape);
+            updateDepths();
+        }
+    }
+
     // Mode
     @Override
     public void onModeSelected(Mode mode) {
+        for (Shape s : shapes) {
+            s.setSelected(false);
+        }
+
+        removeSelectionBox();
+
+        repaint();
+
         this.currentMode = mode;
     }
 
@@ -70,6 +93,7 @@ public class Canvas extends JPanel implements ToolbarListener {
         }
     }
 
+    // 選取框
     public void setSelectionBox(int x1, int y1, int x2, int y2) {
         int x = Math.min(x1, x2);
         int y = Math.min(y1, y2);
@@ -85,6 +109,7 @@ public class Canvas extends JPanel implements ToolbarListener {
     // Shape
     public void addShape(Shape shape) {
         shapes.add(shape);
+        updateDepths();
     }
 
     public List<Shape> getShapes() {
