@@ -33,17 +33,19 @@ public class CompositionLine extends Line {
         int x5 = (int) (x2 - diamondLength * Math.cos(angle) + diamondWidth * Math.sin(angle));
         int y5 = (int) (y2 - diamondLength * Math.sin(angle) - diamondWidth * Math.cos(angle));
 
+        // 畫主線段
         g2d.drawLine(x1, y1, x4, y4);
 
+        // 畫菱形
         Polygon diamond = new Polygon();
         diamond.addPoint(x2, y2);
         diamond.addPoint(x3, y3);
         diamond.addPoint(x4, y4);
         diamond.addPoint(x5, y5);
 
+        // 畫空心菱形
         g2d.setColor(Color.WHITE);
         g2d.fillPolygon(diamond);
-
         g2d.setColor(Color.GRAY);
         g.drawPolygon(diamond);
 

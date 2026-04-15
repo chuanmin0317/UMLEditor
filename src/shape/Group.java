@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Group extends Shape {
-    private List<Shape> childShapes = new ArrayList<>();
+    private final List<Shape> childShapes = new ArrayList<>();
 
     public Group() {
         super(0, 0, 0, 0);

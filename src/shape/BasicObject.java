@@ -81,6 +81,7 @@ public abstract class BasicObject extends Shape {
         }
     }
 
+    // 用於找到最近的Port 來連接線條
     public Port getClosestPort(int mx, int my) {
         updatePorts();
 
@@ -98,6 +99,7 @@ public abstract class BasicObject extends Shape {
         return closest;
     }
 
+    // 用於確保是滑鼠在Port 上要進行圖形縮放
     public Port isOnPort(int mx, int my) {
         if (!isSelected || ports == null) return null;
 

@@ -12,7 +12,7 @@ import shape.Shape;
 import shape.Group;
 
 public class Canvas extends JPanel implements ToolbarListener {
-    private List<Shape> shapes = new ArrayList<>();
+    private final List<Shape> shapes = new ArrayList<>();
     private Mode currentMode;
     private ToolBar toolBar;
     private Rectangle selectionBox = null;
@@ -49,7 +49,9 @@ public class Canvas extends JPanel implements ToolbarListener {
             }
         };
 
+        // mousePressed() and mouseReleased()
         addMouseListener(mouseHandler);
+        // mouseDragged()
         addMouseMotionListener(mouseHandler);
 
     }
@@ -74,8 +76,14 @@ public class Canvas extends JPanel implements ToolbarListener {
     }
 
     // Mode
+    /**
+     * 接收來自ToolBar 的模式切換指令，並更興Canvas 當前的Mode
+     * 為ToolbarListener 的實作
+     * @param mode 準備切換的目標模式實體 ex. SelectMode, RectMode ...
+     */
     @Override
     public void onModeSelected(Mode mode) {
+        // 切換Mode 時取切所有的選取狀態
         for (Shape s : shapes) {
             s.setSelected(false);
         }
@@ -179,8 +187,7 @@ public class Canvas extends JPanel implements ToolbarListener {
             panel.add(nameField);
 
             panel.add(new JLabel("Color"));
-            String[] colorOptions = {"gray", "yellow", "red", "green", "blue", "white"};
-            JComboBox<String> colorBox = new JComboBox<>(colorOptions);
+            JComboBox<String> colorBox = getStringJComboBox(obj);
             panel.add(colorBox);
 
             int result = JOptionPane.showConfirmDialog(
@@ -209,6 +216,28 @@ public class Canvas extends JPanel implements ToolbarListener {
 
     }
 
+    private static JComboBox<String> getStringJComboBox(BasicObject obj) {
+        String[] colorOptions = {"gray", "yellow", "red", "green", "blue", "white"};
+        JComboBox<String> colorBox = new JComboBox<>(colorOptions);
+
+        Color currentColor = obj.getBgColor();
+        if (Color.YELLOW.equals(currentColor)) {
+            colorBox.setSelectedItem("yellow");
+        } else if (Color.RED.equals(currentColor)) {
+            colorBox.setSelectedItem("red");
+        } else if (Color.GREEN.equals(currentColor)) {
+            colorBox.setSelectedItem("green");
+        } else if (Color.BLUE.equals(currentColor)) {
+            colorBox.setSelectedItem("blue");
+        } else if (Color.WHITE.equals(currentColor)) {
+            colorBox.setSelectedItem("white");
+        } else {
+            colorBox.setSelectedItem("gray"); 
+        }
+        return colorBox;
+    }
+
+    // 呼叫repaint() 時會被間接觸發
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

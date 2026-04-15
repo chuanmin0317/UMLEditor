@@ -8,12 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ToolBar extends JPanel {
-    private JButton[] buttons;
-    private String[] buttonNames = {
-            "Select", "Association", "Generalization", "Composition", "Rect", "Oval"
-    };
-
-    private ToolbarListener listener;
+    private final JButton[] buttons;
+    private final ToolbarListener listener;
     private JButton currentButton, previousButton;
 
     public ToolBar(ToolbarListener listener) {
@@ -24,6 +20,9 @@ public class ToolBar extends JPanel {
 
         buttons = new JButton[6];
 
+        String[] buttonNames = {
+                "Select", "Association", "Generalization", "Composition", "Rect", "Oval"
+        };
         for (int i = 0; i < buttonNames.length; i++) {
             JButton btn = new JButton(buttonNames[i]);
             btn.setBackground(Color.WHITE);

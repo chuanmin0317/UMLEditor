@@ -36,6 +36,7 @@ public class SelectMode implements Mode {
 
         resizingShape = null;
 
+        // resize obj
         for (int i = shapes.size() - 1; i >=0; i--) {
             Shape s = shapes.get(i);
             if (s.isSelected() && s instanceof BasicObject) {
@@ -81,6 +82,7 @@ public class SelectMode implements Mode {
             }
         }
 
+        // moving obj or selection Box
         if (clickShape != null) {
             isMoving = true;
 

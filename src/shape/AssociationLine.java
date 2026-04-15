@@ -19,6 +19,7 @@ public class AssociationLine extends Line {
         int x2 = endPort.getX();
         int y2 = endPort.getY();
 
+        // 畫主線段
         g.drawLine(x1, y1, x2, y2);
 
         int arrowWidth = 7;
@@ -31,6 +32,7 @@ public class AssociationLine extends Line {
         int x4 = (int) (x2 - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle));
         int y4 = (int) (y2 - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle));
 
+        // 畫出箭頭的兩端
         g.drawLine(x2, y2, x3, y3);
         g.drawLine(x2, y2, x4, y4);
 

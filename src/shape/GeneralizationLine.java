@@ -29,13 +29,16 @@ public class GeneralizationLine extends Line{
         int x4 = (int) (x2 - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle));
         int y4 = (int) (y2 - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle));
 
+        // 畫主線段
         g2d.drawLine(x1, y1, (int)(x2 - arrowLength * Math.cos(angle)), (int)(y2 - arrowLength * Math.sin(angle)));
 
+        // 建立三角形物件
         Polygon arrow = new Polygon();
         arrow.addPoint(x2, y2);
         arrow.addPoint(x3, y3);
         arrow.addPoint(x4, y4);
 
+        // 畫空心三角形
         g2d.setColor(Color.WHITE);
         g2d.fillPolygon(arrow);
         g2d.setColor(Color.GRAY);

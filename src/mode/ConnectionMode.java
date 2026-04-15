@@ -53,7 +53,7 @@ public class ConnectionMode implements Mode {
                 endPort = endShape.getClosestPort(x, y);
 
                 Line newLine = switch (lineType) {
-                    case ("Association") -> new AssociationLine(startPort, endPort);
+                    case "Association" -> new AssociationLine(startPort, endPort);
                     case "Generalization" -> new GeneralizationLine(startPort, endPort);
                     case "Composition" -> new CompositionLine(startPort, endPort);
                     default -> null;
