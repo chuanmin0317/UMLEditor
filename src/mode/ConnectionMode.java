@@ -6,7 +6,7 @@ import ui.Canvas;
 import java.util.List;
 
 public class ConnectionMode implements Mode {
-    private String lineType;
+    private final String lineType;
     private BasicObject startShape = null;
     private Port startPort = null;
 
