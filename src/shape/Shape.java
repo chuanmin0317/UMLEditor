@@ -3,55 +3,34 @@ package shape;
 import java.awt.*;
 
 public abstract class Shape {
-    protected int x, y, width, height;
     protected int depth;
     protected boolean isSelected = false;
+    protected boolean isHovered = false;
 
-    public Shape(int x, int y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    public Shape() {
         this.depth = 0;
     }
 
+    // 核心行為：繪圖與點擊偵測
     public abstract void draw(Graphics g);
+    public abstract boolean contains(int mx, int my);
 
-    public int getX() { return x; }
+    // 抽象化座標與尺寸
+    public abstract int getX();
+    public abstract int getY();
+    public abstract int getWidth();
+    public abstract int getHeight();
 
-    public int getY() { return  y; }
+    // 讓圖形可以被移動
+    public abstract void setLocation(int x, int y);
 
-    public int getWidth() { return width; }
+    // 共用的狀態 Getter/Setter
+    public void setSelected(boolean selected) { this.isSelected = selected; }
+    public boolean isSelected() { return isSelected; }
 
-    public int getHeight() {return height; }
+    public void setHovered(boolean hovered) { this.isHovered = hovered; }
+    public boolean isHovered() { return isHovered; }
 
-    public void setLocation(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public void setSize(int width, int height) {
-        this.width = width;
-        this.height = height;
-    }
-
-    public void setSelected(boolean selected) {
-        this.isSelected = selected;
-    }
-
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
-    }
-
-    public int getDepth() {
-        return depth;
-    }
-
-    public boolean contains(int mx, int my) {
-        return mx >= x && mx <= x + width && my >= y && my <= y + height;
-    }
+    public void setDepth(int depth) { this.depth = depth; }
+    public int getDepth() { return depth; }
 }

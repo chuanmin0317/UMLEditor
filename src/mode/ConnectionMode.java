@@ -1,7 +1,8 @@
 package mode;
 
+import core.ShapeManager;
+import core.UMLController;
 import shape.*;
-import ui.Canvas;
 
 import java.util.List;
 
@@ -15,11 +16,10 @@ public class ConnectionMode implements Mode {
     }
 
     @Override
-    public void mousePressed(int x, int y, Canvas canvas) {
-        List<Shape> shapes = canvas.getShapes();
+    public void mousePressed(int x, int y, ShapeManager sm, UMLController controller) {
+        List<Shape> shapes = sm.getShapes();
         startShape = null;
         startPort = null;
-
         for (int i = shapes.size() - 1; i >= 0; i--) {
             Shape shape = shapes.get(i);
             if (shape.contains(x, y) && shape instanceof BasicObject) {
@@ -31,16 +31,14 @@ public class ConnectionMode implements Mode {
     }
 
     @Override
-    public void mouseDragged(int x, int y, Canvas canvas) {
-
-    }
+    public void mouseDragged(int x, int y, ShapeManager sm, UMLController controller) {}
 
     @Override
-    public void mouseReleased(int x, int y, Canvas canvas) {
+    public void mouseReleased(int x, int y, ShapeManager sm, UMLController controller) {
         if (startShape != null && startPort != null) {
             BasicObject endShape = null;
             Port endPort = null;
-            List<Shape> shapes = canvas.getShapes();
+            List<Shape> shapes = sm.getShapes();
             for (int i = shapes.size() -1; i >= 0; i--) {
                 Shape shape = shapes.get(i);
                 if (shape.contains(x, y) && shape instanceof BasicObject) {
@@ -51,21 +49,15 @@ public class ConnectionMode implements Mode {
 
             if (endShape != null && endShape != startShape) {
                 endPort = endShape.getClosestPort(x, y);
-
                 Line newLine = switch (lineType) {
                     case "Association" -> new AssociationLine(startPort, endPort);
                     case "Generalization" -> new GeneralizationLine(startPort, endPort);
                     case "Composition" -> new CompositionLine(startPort, endPort);
                     default -> null;
                 };
-
-                if (newLine != null) {
-                    canvas.addShape(newLine);
-                }
+                if (newLine != null) sm.addShape(newLine);
             }
         }
-
-        canvas.repaint();
-
+        controller.requestRepaint();
     }
 }

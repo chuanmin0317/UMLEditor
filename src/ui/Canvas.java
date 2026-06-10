@@ -1,266 +1,73 @@
 package ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.*;
-
-import mode.Mode;
-import shape.BasicObject;
+import core.ShapeManager;
+import core.UMLController;
 import shape.Shape;
-import shape.Group;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class Canvas extends JPanel implements ToolbarListener {
-    private final List<Shape> shapes = new ArrayList<>();
-    private Mode currentMode;
-    private ToolBar toolBar;
-    private Rectangle selectionBox = null;
+public class Canvas extends JPanel {
+    private UMLController controller;
+    private ShapeManager shapeManager;
 
     public Canvas() {
         setBackground(Color.WHITE);
+    }
+
+    public void setup(UMLController controller, ShapeManager shapeManager) {
+        this.controller = controller;
+        this.shapeManager = shapeManager;
 
         MouseAdapter mouseHandler = new MouseAdapter() {
             @Override
-            public void mousePressed(MouseEvent e) {
-                if (currentMode != null) {
-                    int x = e.getX();
-                    int y = e.getY();
-                    currentMode.mousePressed(x, y, Canvas.this);
-                }
-            }
-
+            public void mousePressed(MouseEvent e) { controller.handleMousePressed(e.getX(), e.getY()); }
             @Override
-            public void mouseDragged(MouseEvent e) {
-                if (currentMode != null) {
-                    int x = e.getX();
-                    int y = e.getY();
-                    currentMode.mouseDragged(x, y, Canvas.this);
-                }
-            }
-
+            public void mouseDragged(MouseEvent e) { controller.handleMouseDragged(e.getX(), e.getY()); }
             @Override
-            public void mouseReleased(MouseEvent e) {
-                if (currentMode != null) {
-                    int x = e.getX();
-                    int y = e.getY();
-                    currentMode.mouseReleased(x, y, Canvas.this);
+            public void mouseReleased(MouseEvent e) { controller.handleMouseReleased(e.getX(), e.getY()); }
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                boolean needsRepaint = false;
+                Shape topHoveredShape = null;
+                for (int i = shapeManager.getShapes().size() - 1; i >= 0; i--) {
+                    Shape s = shapeManager.getShapes().get(i);
+                    if (s.contains(e.getX(), e.getY())) {
+                        topHoveredShape = s;
+                        break;
+                    }
                 }
+                for (Shape s : shapeManager.getShapes()) {
+                    boolean wasHovered = s.isHovered();
+                    boolean isNowHovered = (s == topHoveredShape);
+                    if (wasHovered != isNowHovered) {
+                        s.setHovered(isNowHovered);
+                        needsRepaint = true;
+                    }
+                }
+                if (needsRepaint) controller.requestRepaint();
             }
         };
-
-        // mousePressed() and mouseReleased()
         addMouseListener(mouseHandler);
-        // mouseDragged()
         addMouseMotionListener(mouseHandler);
-
     }
 
-    public void setToolBar(ToolBar toolBar) {
-        this.toolBar = toolBar;
-    }
-
-    // Depth maintain
-    public void updateDepths() {
-        int n = shapes.size();
-        for (int i = 0; i < n; i++) {
-            shapes.get(i).setDepth(n - 1 - i);
-        }
-    }
-
-    public void bringToFront(Shape shape) {
-        if (shapes.remove(shape)) {
-            shapes.add(shape);
-            updateDepths();
-        }
-    }
-
-    // Mode
-    /**
-     * 接收來自ToolBar 的模式切換指令，並更興Canvas 當前的Mode
-     * 為ToolbarListener 的實作
-     * @param mode 準備切換的目標模式實體 ex. SelectMode, RectMode ...
-     */
-    @Override
-    public void onModeSelected(Mode mode) {
-        // 切換Mode 時取切所有的選取狀態
-        for (Shape s : shapes) {
-            s.setSelected(false);
-        }
-
-        removeSelectionBox();
-
-        repaint();
-
-        this.currentMode = mode;
-    }
-
-    public void restorePreviousMode() {
-        if (toolBar != null) {
-            toolBar.resetButtonColor();
-        }
-    }
-
-    // 選取框
-    public void setSelectionBox(int x1, int y1, int x2, int y2) {
-        int x = Math.min(x1, x2);
-        int y = Math.min(y1, y2);
-        int w = Math.abs(x1 - x2);
-        int h = Math.abs(y1 - y2);
-        selectionBox = new Rectangle(x, y, w, h);
-    }
-
-    public void removeSelectionBox() {
-        selectionBox = null;
-    }
-
-    // Shape
-    public void addShape(Shape shape) {
-        shapes.add(shape);
-        updateDepths();
-    }
-
-    public List<Shape> getShapes() {
-        return shapes;
-    }
-
-    // Group
-    public void groupSelectedShapes() {
-        Group newGroup = new Group();
-        List<Shape> selectedShapes = new ArrayList<>();
-
-        for (Shape s : shapes) {
-            if (s.isSelected()) {
-                selectedShapes.add(s);
-            }
-        }
-
-        if (selectedShapes.size() > 1) {
-            for (Shape s : selectedShapes) {
-                s.setSelected(false);
-                newGroup.addShape(s);
-                shapes.remove(s);
-            }
-            newGroup.setSelected(true);
-            shapes.add(newGroup);
-            repaint();
-        }
-    }
-
-    public void ungroupSelectedShape() {
-        List<Shape> groupsToUngroup = new ArrayList<>();
-
-        for (Shape s : shapes) {
-            if (s.isSelected() && s instanceof Group) {
-                groupsToUngroup.add(s);
-            }
-        }
-
-        if (groupsToUngroup.size() != 1) return;
-
-        for (Shape g : groupsToUngroup) {
-            Group group = (Group) g;
-            shapes.remove(group);
-
-            shapes.addAll(group.getChildShapes());
-        }
-
-        repaint();
-    }
-
-    // label
-    public void customizeLabelStyle() {
-        List<Shape> selectedShapes = new ArrayList<>();
-
-        for (Shape s : shapes) {
-            if (s.isSelected()) {
-                selectedShapes.add(s);
-            }
-        }
-
-        if (selectedShapes.size() == 1 && selectedShapes.getFirst() instanceof BasicObject obj) {
-
-            JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
-
-            panel.add(new JLabel("Name"));
-            JTextField nameField = new JTextField(obj.getName());
-            panel.add(nameField);
-
-            panel.add(new JLabel("Color"));
-            JComboBox<String> colorBox = getStringJComboBox(obj);
-            panel.add(colorBox);
-
-            int result = JOptionPane.showConfirmDialog(
-                    this, panel, "Customize Label Style",
-                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
-            );
-
-            if (result == JOptionPane.OK_OPTION) {
-                obj.setName(nameField.getText());
-
-                String selectedColor = (String) colorBox.getSelectedItem();
-                switch (selectedColor) {
-                    case "yellow": obj.setBgColor(Color.YELLOW); break;
-                    case "red": obj.setBgColor(Color.RED); break;
-                    case "green": obj.setBgColor(Color.GREEN); break;
-                    case "blue": obj.setBgColor(Color.BLUE); break;
-                    case "white": obj.setBgColor(Color.WHITE); break;
-                    case null:
-                        break;
-                    default: obj.setBgColor(Color.LIGHT_GRAY); break;
-                }
-
-                repaint();
-            }
-        }
-
-    }
-
-    private static JComboBox<String> getStringJComboBox(BasicObject obj) {
-        String[] colorOptions = {"gray", "yellow", "red", "green", "blue", "white"};
-        JComboBox<String> colorBox = new JComboBox<>(colorOptions);
-
-        Color currentColor = obj.getBgColor();
-        if (Color.YELLOW.equals(currentColor)) {
-            colorBox.setSelectedItem("yellow");
-        } else if (Color.RED.equals(currentColor)) {
-            colorBox.setSelectedItem("red");
-        } else if (Color.GREEN.equals(currentColor)) {
-            colorBox.setSelectedItem("green");
-        } else if (Color.BLUE.equals(currentColor)) {
-            colorBox.setSelectedItem("blue");
-        } else if (Color.WHITE.equals(currentColor)) {
-            colorBox.setSelectedItem("white");
-        } else {
-            colorBox.setSelectedItem("gray"); 
-        }
-        return colorBox;
-    }
-
-    // 呼叫repaint() 時會被間接觸發
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
+        if (shapeManager == null) return;
         Graphics2D g2d = (Graphics2D) g;
 
-        for (Shape shape : shapes) {
+        for (Shape shape : shapeManager.getShapes()) {
             shape.draw(g2d);
         }
 
+        Rectangle selectionBox = shapeManager.getSelectionBox();
         if (selectionBox != null) {
-            g2d.setColor((new Color(20, 40, 80)));
-
+            g2d.setColor(new Color(20, 40, 80));
             float[] dashPattern = {5f, 5f};
-            g2d.setStroke(new BasicStroke(
-                    1.5f,
-                    BasicStroke.CAP_BUTT,
-                    BasicStroke.JOIN_MITER,
-                    10.0f,
-                    dashPattern,
-                    0.0f
-            ));
-
+            g2d.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dashPattern, 0.0f));
             g2d.drawRect(selectionBox.x, selectionBox.y, selectionBox.width, selectionBox.height);
             g2d.setStroke(new BasicStroke());
         }

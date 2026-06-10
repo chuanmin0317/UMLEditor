@@ -37,5 +37,7 @@ public class AssociationLine extends Line {
         g.drawLine(x2, y2, x4, y4);
 
         g2d.setStroke(new java.awt.BasicStroke((1.0f)));
+
+        drawPorts(g);
     }
 }

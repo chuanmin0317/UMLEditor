@@ -45,5 +45,7 @@ public class GeneralizationLine extends Line{
         g2d.drawPolygon(arrow);
 
         g2d.setStroke(new java.awt.BasicStroke((1.0f)));
+
+        drawPorts(g);
     }
 }

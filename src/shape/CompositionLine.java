@@ -50,5 +50,7 @@ public class CompositionLine extends Line {
         g.drawPolygon(diamond);
 
         g2d.setStroke(new java.awt.BasicStroke((1.0f)));
+
+        drawPorts(g);
     }
 }
